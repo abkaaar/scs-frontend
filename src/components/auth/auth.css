@@ -1,0 +1,182 @@
+/* IBBULogin.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+  }
+  
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-image: url('../../assets/layout.webp'); */
+    /* background: linear-gradient(135deg, #3a7c3f 0%, #91cf96 100%); */
+    padding: 20px;
+    box-sizing: border-box; /* Include padding in height calculation */
+  }
+
+  .login-container::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('../../assets/layout.webp') center/cover no-repeat;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+.login-card {
+  width: 100%;
+  max-width: 1000px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Left Panel Styling */
+.left-panel {
+  background: linear-gradient(135deg, #3a7c3f 0%, #abd1ae 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  padding: 10% 5%;
+  border-radius: 20%;
+  margin:auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.left-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('../../assets/layout.webp') center/cover no-repeat;
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.branding-content {
+  position: relative;
+  z-index: 1;
+}
+
+.university-greeting {
+  font-size: 4rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 20px !important;
+  color: white !important;
+  line-height: 1.1 !important;
+}
+
+.university-tagline {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 16px;
+  margin-bottom: 40px !important;
+}
+
+.social-login-section {
+  margin-top: 50px;
+}
+
+.social-login-title {
+  color: white !important;
+  margin-bottom: 20px !important;
+}
+
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.facebook-btn {
+  background-color: #3b5998 !important;
+  border-color: #3b5998 !important;
+  border-radius: 30px !important;
+}
+
+.twitter-btn {
+  background-color: #1da1f2 !important;
+  border-color: #1da1f2 !important;
+  border-radius: 30px !important;
+}
+
+/* Right Panel Styling */
+.right-panel {
+  background: white;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.login-form-container {
+  width: 100%;
+}
+
+.login-title {
+  font-weight: 600 !important;
+  margin-bottom: 10px !important;
+  color: #333 !important;
+}
+
+.create-account-prompt {
+  color: #666 !important;
+  margin-bottom: 30px !important;
+}
+
+.create-account-prompt a {
+  color: #3a7c3f;
+  font-weight: 600;
+}
+
+.login-form {
+  width: 100%;
+}
+
+.login-form-button {
+  background: #3a7c3f !important;
+  border-color: #3a7c3f !important;
+  border-radius: 30px !important;
+  height: 50px !important;
+  margin-top: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.login-form-button:hover {
+  background: #91cf96 !important;
+  border-color: #91cf96 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(86, 36, 208, 0.3);
+}
+
+.login-form-forgot {
+  color: #91cf96;
+  font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .left-panel {
+    padding: 30px;
+  }
+  
+  .right-panel {
+    padding: 30px;
+  }
+  
+  .university-greeting {
+    font-size: 3rem !important;
+  }
+}
