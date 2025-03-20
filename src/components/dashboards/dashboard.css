@@ -1,0 +1,8 @@
+@media (min-width: 768px){
+    .site-layout{
+      margin-left: 10% !important;
+    }
+    .mobile-logo{
+      display: none;
+    }
+}

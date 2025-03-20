@@ -95,13 +95,14 @@ export const AuthProvider = ({ children }) => {
   }, [navigate]);
 
   // Login function
-  const login = async (username, password) => {
+  const login = async (email, password) => {
     try {
-      const response = await api.post('/auth/login', { username, password });
+      const response = await api.post('/auth/login', { email, password });
+      console.log(response)    
       
       // Store token
       localStorage.setItem('authToken', response.data.token);
-      
+      console.log(response)    
       // Set user state
       setUser(response.data.user);
       
@@ -124,6 +125,8 @@ export const AuthProvider = ({ children }) => {
         success: false, 
         message: error.response?.data?.message || 'Login failed'
       };
+      // console.log(response)    
+
     }
   };
 

@@ -3,6 +3,8 @@ import { Form, Input, Button, Checkbox, Row, Col, Typography, Divider, Card, Spi
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuth } from '../Api/AuthContext'; // Update with correct path
 import './auth.css';
+import axios from 'axios';
+
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -14,8 +16,9 @@ const Sign_in = () => {
   const onFinish = async (values) => {
     try {
       setLoading(true);
-      const { username, password } = values;
-      await login(username, password);
+      const { email, password } = values;
+      const response = await axios.post('https://scs-backend-ue4a.onrender.com/api/auth/login', { email, password });
+      console.log(response)
       // Don't need to show message here as it's handled in the auth context
     } catch (error) {
       // Error handling is done in the auth context
@@ -58,7 +61,7 @@ const Sign_in = () => {
                   onFinish={onFinish}
                 >
                   <Form.Item
-                    name="username"
+                    name="email"
                     rules={[{ required: true, message: 'Please input your Username or Student ID!' }]}
                   >
                     <Input 

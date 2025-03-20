@@ -6,7 +6,9 @@ import {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, theme, ConfigProvider } from 'antd';
+import { Breadcrumb, Layout, Menu,Dropdown, Avatar, theme, ConfigProvider } from 'antd';
+
+
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -27,11 +29,37 @@ const items = [
   getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
   getItem('Profile', '9', <UserOutlined />),
 ];
+
+
+
+
 const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  const profileMenu = (
+    <Menu
+      items={[
+        {
+          key: '1',
+          label: 'Profile',
+        },
+        {
+          key: '2',
+          label: 'Settings',
+        },
+        {
+          key: '3',
+          label: 'Logout',
+        },
+      ]}
+    />
+  );
+
+
+
   return (
     <Layout
       style={{
@@ -65,12 +93,29 @@ const MainLayout = () => {
   </ConfigProvider>
       </Sider>
       <Layout>
-        <Header
-          style={{
-            padding: 0,
-            background: colorBgContainer,
-          }}
-        />
+      <Header
+        style={{
+          padding: 0,
+          background: colorBgContainer,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <div style={{ marginLeft: 16 }}>
+          {/* Your logo or title can go here */}
+          <span>Dashboard</span>
+        </div>
+        
+        <div style={{ marginRight: 20 }}>
+          <Dropdown overlay={profileMenu} placement="bottomRight">
+            <Avatar 
+              icon={<UserOutlined />} 
+              style={{ cursor: 'pointer' }}
+            />
+          </Dropdown>  
+        </div>
+      </Header>
         <Content
           style={{
             margin: '0 16px',
@@ -81,8 +126,7 @@ const MainLayout = () => {
               margin: '16px 0',
             }}
           >
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
+            <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
           </Breadcrumb>
           <div
             style={{
