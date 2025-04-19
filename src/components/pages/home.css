@@ -1,0 +1,15 @@
+.body {
+  
+  }
+
+  .body::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('../../assets/layout.webp') center/cover no-repeat;
+    opacity: 0.2;
+    pointer-events: none;
+  }

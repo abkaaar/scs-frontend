@@ -7,6 +7,11 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu,Dropdown, Avatar, theme, ConfigProvider } from 'antd';
+import { Outlet, useLocation } from 'react-router-dom';
+import AdminDashboard from '../dashboards/adminDashboard/AdminDashboard';
+import StudentLayout from '../dashboards/studentDashboard/StudentLayout';
+import SuperAdminLayout from '../dashboards/superAdminDashboard/SuperAdminLayout';
+import StudentDashboard from '../dashboards/studentDashboard/pages/DashboardPanel';
 
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -34,10 +39,14 @@ const items = [
 
 
 const MainLayout = () => {
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+  const pathParts = location.pathname.split('/'); // splits the URL by '/'
+
+  const role = pathParts[2]; // because index 0 is '', 1 is 'dashboard', 2 is the role
 
   const profileMenu = (
     <Menu
@@ -61,93 +70,12 @@ const MainLayout = () => {
 
 
   return (
-    <Layout
-      style={{
-        minHeight: '100vh',
-      }}
-
-      theme="light"
-    >
-
-
-      <Sider collapsible collapsed={collapsed}  width={250} theme='light' onCollapse={(value) => setCollapsed(value)}>
-        <div className="demo-logo-vertical" />
-        <img  src="https://ibbu.edu.ng/wp-content/uploads/2023/12/logo2.svg"style={{width:'15rem',margin:'3%'}} alt="IBB University Logo" />
-       <br/>
-       <ConfigProvider
-    theme={{
-      components: {
-        Menu: {
-          // Customize menu colors        // Background color of menu items
-          colorItemText: '#006400',        // Text color of menu items
-          colorItemTextSelected: 'green',  // Text color of selected item
-          colorItemBgSelected: '#e6f7e6',  // Background of selected item
-          colorItemTextHover: 'darkgreen', // Text color on hover
-          // You can add more customizations as needed
-        },
-      },
-    }}
-  >
-
-        <Menu theme="light" color='green' defaultSelectedKeys={['1']} mode="inline" items={items} />
-  </ConfigProvider>
-      </Sider>
-      <Layout>
-      <Header
-        style={{
-          padding: 0,
-          background: colorBgContainer,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ marginLeft: 16 }}>
-          {/* Your logo or title can go here */}
-          <span>Dashboard</span>
-        </div>
-        
-        <div style={{ marginRight: 20 }}>
-          <Dropdown overlay={profileMenu} placement="bottomRight">
-            <Avatar 
-              icon={<UserOutlined />} 
-              style={{ cursor: 'pointer' }}
-            />
-          </Dropdown>  
-        </div>
-      </Header>
-        <Content
-          style={{
-            margin: '0 16px',
-          }}
-        >
-          <Breadcrumb
-            style={{
-              margin: '16px 0',
-            }}
-          >
-            <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
-          </Breadcrumb>
-          <div
-            style={{
-              padding: 24,
-              minHeight: 360,
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-            }}
-          >
-            Bill is a cat.
-          </div>
-        </Content>
-        <Footer
-          style={{
-            textAlign: 'center',
-          }}
-        >
-          Bantigi Oasis ©{new Date().getFullYear()} Created by Bantigi Oasis
-        </Footer>
-      </Layout>
-    </Layout>
+   <>
+{/* {role === 'admin' && <AdminDashboard/>}
+      {role === 'student' && <StudentDashboard/>}
+      {role === 'super-admin' && <SuperAdminLayout/>} */}
+      <Outlet/>
+   </>
   );
 };
 export default MainLayout;

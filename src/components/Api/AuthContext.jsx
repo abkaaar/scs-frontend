@@ -94,39 +94,50 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, [navigate]);
 
-  // Login function
-  const login = async (email, password) => {
+  // Request login to get temp token and send OTP
+  const requestLogin = async (loginData) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
-      console.log(response)    
-      
-      // Store token
-      localStorage.setItem('authToken', response.data.token);
-      console.log(response)    
-      // Set user state
-      setUser(response.data.user);
-      
-      // Show success message
-      message.success('Login successful');
-      
-      // Redirect to dashboard
-      navigate('/dashboard');
-      
-      return { success: true };
-    } catch (error) {
-      // Show error message from server if available
-      if (error.response && error.response.data && error.response.data.message) {
-        message.error(error.response.data.message);
+      const response = await axios.post(
+        API_ENDPOINTS.LOGIN,
+        loginData
+      );
+      if (response.data.success) {
+        return { success: true, token: response.data.token };
       } else {
-        message.error('Login failed. Please check your credentials.');
+        message.error(response.data.message || 'Login failed', 5);
+        return { success: false, message: response.data.message };
       }
-      
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'Login failed'
-      };
-      // console.log(response)    
+    } catch (error) {
+      message.error(error.response?.data?.message || 'Login error occurred', 5);
+      return { success: false, message: error.response?.data?.message || 'Login error occurred' };
+    }
+  };
 
+  // Verify OTP and complete login
+  const verifyOtp = async (token, otp) => {
+    try {
+      const response = await axios.post(
+        `${API_ENDPOINTS.API_BASE_URL}/auth/verification`,
+        {
+          token,
+          otp,
+        }
+      );
+      if (response.data.success) {
+        // Store token
+        localStorage.setItem('authToken', token);
+        // Set user state and role
+        setUser(response.data.user);
+        message.success('OTP verified. Redirecting to dashboard...');
+        navigate('/dashboard');
+        return { success: true };
+      } else {
+        message.error(response.data.message || 'OTP verification failed');
+        return { success: false, message: response.data.message };
+      }
+    } catch (error) {
+      message.error(error.response?.data?.message || 'OTP verification error occurred');
+      return { success: false, message: error.response?.data?.message || 'OTP verification error occurred' };
     }
   };
 
@@ -150,7 +161,8 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     isAuthenticated: !!user,
-    login,
+    requestLogin,
+    verifyOtp,
     logout,
     loading,
     api // Expose configured axios instance

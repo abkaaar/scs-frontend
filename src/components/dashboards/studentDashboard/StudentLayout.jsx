@@ -2,9 +2,14 @@ import React, { Children, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   CaretDownFilled,
+  ClockCircleOutlined,
+  ClockCircleTwoTone,
   DesktopOutlined,
+  FileAddFilled,
   FileOutlined,
+  FormOutlined,
   PieChartOutlined,
+  SendOutlined,
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -25,14 +30,14 @@ function getItem(label, key, icon, children, link) {
 }
 const items = [
   getItem('Dashboard', '/dashboard/student', <PieChartOutlined />,  '','student' ),
-  getItem('Clearance Request', '/dashboard/student/clearance-request', <DesktopOutlined />,'','student/clearance-request'),
-  getItem('Clearance Status', 'sub1', <UserOutlined />, [
+  getItem('Clearance Request', '/dashboard/student/clearance-request', <FormOutlined />,'','student/clearance-request'),
+  getItem('Clearance Status', 'sub1', <ClockCircleOutlined  />, [
     getItem('Tom', '3'),
     getItem('Bill', '4'),
     getItem('Alex', '5'),
   ]),
   getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
-  getItem('Profile', '9', <UserOutlined />),
+  getItem('Profile', '/dashboard/student/profile', <UserOutlined />,'','student/profile'),
 ];
 
 

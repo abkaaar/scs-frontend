@@ -11,7 +11,8 @@ import {
   message, 
   Space, 
   Divider,
-  Alert
+  Alert,
+  ConfigProvider
 } from 'antd';
 import { 
   InboxOutlined, 
@@ -19,6 +20,8 @@ import {
   SaveOutlined,
   SendOutlined
 } from '@ant-design/icons';
+import { greenTheme } from '../../theme';
+
 
 const { Header, Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -69,13 +72,15 @@ const ClearanceRequestForm = () => {
   };
 
   return (
+    <ConfigProvider theme={greenTheme}>
+
     <Layout style={{ minHeight: '100vh' }}>
-      <Content className="site-layout" style={{ padding: '0 50px', marginTop: 24 }}>
+      <Content className="site-layout-request" style={{  marginTop: 24 }}>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <Space>
             <Button 
               icon={<ArrowLeftOutlined />} 
-              onClick={() => navigate('/student/dashboard')}
+              onClick={() => navigate('/dashboard/student')}
             >
               Back to Dashboard
             </Button>
@@ -165,6 +170,7 @@ const ClearanceRequestForm = () => {
         </Space>
       </Content>
     </Layout>
+    </ConfigProvider>
   );
 };
 

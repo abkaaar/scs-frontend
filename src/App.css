@@ -12,7 +12,28 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background-image: url('../../assets/layout.webp'); */
+  /* background: linear-gradient(135deg, #3a7c3f 0%, #91cf96 100%); */
+  padding: 20px;
+  box-sizing: border-box; /* Include padding in height calculation */
+}
 
+body::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('../../assets/layout.webp') center/cover no-repeat !important;
+  opacity: 0.2;
+  pointer-events: none;
+}
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
