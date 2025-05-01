@@ -19,6 +19,7 @@ import AdminUsers from "./components/dashboards/superAdminDashboard/AdminUsers";
 import MainLayout from "./components/layout/Layout";
 import AdminLayout from "./components/dashboards/adminDashboard/AdminLayout";
 import SuperAdminClearanceRequests from "./components/dashboards/superAdminDashboard/ClearanceRequests";
+import SuperAdminApprovals from "./components/dashboards/superAdminDashboard/SuperAdminApprovals";
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
             <Route index element={<SuperAdminDashboard />} />
             <Route path="departments" element={<Departments />} />
             <Route path="clearance-requests" element={<SuperAdminClearanceRequests />} />
+            <Route path="approvals" element={<SuperAdminApprovals />} />
             <Route path="users" element={<Navigate to="/dashboard/super-admin/users/students" replace />} />
             <Route path="users/students" element={<StudentUsers />} />
             <Route path="users/admins" element={<AdminUsers />} />

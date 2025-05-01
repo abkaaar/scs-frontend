@@ -197,7 +197,7 @@ const Sign_in = () => {
                   <Title level={2} className="login-title">Enter OTP</Title>
                   <Paragraph>Please enter the 6-digit OTP sent to your email to complete login.</Paragraph>
                   
-                  <div style={{ margin: '20px 0' }}>
+                  <div style={{ margin: '10px 0' }}>
                     <Row gutter={12} justify="center">
                       {[0, 1, 2, 3, 4, 5].map((index) => (
                         <Col key={index}>
@@ -211,11 +211,11 @@ const Sign_in = () => {
                             autoFocus={index === 0}
                             disabled={loading}
                             style={{
-                              width: '50px',
-                              height: '50px',
-                              fontSize: '24px',
+                              width: '40px',
+                              height: '40px',
+                              fontSize: '20px',
                               textAlign: 'center',
-                              margin: '0 4px',
+                              margin: '10px 4px',
                               borderRadius: '8px',
                               boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                             }}

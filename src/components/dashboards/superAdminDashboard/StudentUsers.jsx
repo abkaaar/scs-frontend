@@ -22,7 +22,8 @@ import {
   DeleteOutlined,
   UserAddOutlined,
   BookOutlined,
-  TeamOutlined
+  TeamOutlined,
+  UploadOutlined
 } from '@ant-design/icons';
 import AddStudentForm from '../../users/AddStudentForm';
 import { useAuth } from '../../Api/AuthContext';
@@ -35,8 +36,9 @@ const themeColors = {
   primary: '#135200',      // Darker forest green (previously #52c41a)
   secondary: '#e6f7e6',    // Slightly darker background (previously #f6ffed)
   border: '#52c41a',       // Using the previous primary as border
-  textPrimary: '#003300',  // Darker text (previously #006400)
-  accent: '#1890ff'        // Keeping the blue accent
+  textPrimary: '#003300',  // Darker text (previously#dda926)
+  accent: '#1890ff'  ,      // Keeping the blue accent
+  warning: '#dda926'        // Keeping the blue accent
 };
 
 const StudentUsers = () => {
@@ -188,11 +190,11 @@ const StudentUsers = () => {
           </Col>
           <Col xs={24} md={16}>
             <Card>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '2%' }}>
                 <div>
                   <Text strong style={{ color: themeColors.textPrimary }}>Quick Actions</Text>
                 </div>
-                <Space>
+                <Space style={{ marginTop: '1%' }}>
                   <Button 
                     type="primary" 
                     icon={<UserAddOutlined />} 
@@ -200,6 +202,14 @@ const StudentUsers = () => {
                     style={{ backgroundColor: themeColors.primary, borderColor: themeColors.primary }}
                   >
                     Add New Student
+                  </Button>
+                  <Button 
+                    type="primary" 
+                    icon={<UploadOutlined />} 
+                    onClick={() => setAddStudentVisible(true)}
+                    style={{ backgroundColor: themeColors.warning, borderColor: themeColors.warning }}
+                  >
+                    Upload Bulk Students
                   </Button>
                 </Space>
               </div>

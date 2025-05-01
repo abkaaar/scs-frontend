@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import { Layout, Typography, Card, Row, Col, Table, Statistic, Space, Avatar, Badge, Divider } from 'antd';
+import { Layout, Typography, Card, Row, Col, Table, Statistic, Space, Avatar, Badge, Divider, message } from 'antd';
 import {
   FileTextOutlined,
   TeamOutlined,
@@ -12,36 +12,122 @@ import {
   CheckCircleOutlined
 } from '@ant-design/icons';
 import SuperAdminSideNav from './SuperAdminSideNav';
-
+import axios from 'axios';
+import API_ENDPOINTS from '../../Api/environtment';
+import { useAuth } from '../../Api/AuthContext';
 const { Title, Text } = Typography;
 const { Content, Header } = Layout;
 
 const SuperAdminDashboard = () => {
+  const [clearanceRequests, setClearanceRequests] = useState(0);
+  const [pendingRequests, setPendingRequests] = useState(0);
+  const [approvedRequests, setApprovedRequests] = useState(0);
+  const [rejectedRequests, setRejectedRequests] = useState(0); 
+  const [departments, setDepartments] = useState([]);
+  const { getStudents, deleteStudent } = useAuth();
+  const [students, setStudents] = useState([]);
+  const [totalStudents, setTotalStudents] = useState(0);
+
   // Dashboard stats
   const [stats] = useState({
     totalClearanceRequests: 500,
     totalDepartments: 12,
     totalUsers: 150,
-    pendingRequests: 45,
-    approvedRequests: 425,
-    rejectedRequests: 30
+    pendingRequests: 1,
+    approvedRequests: 0,
+    rejectedRequests: 0
   });
 
+  useEffect(() => {
+    fetchRequests();
+    fetchDepartments();
+    fetchStudents();
+  }, []);
+
+  const fetchRequests = async () => {
+    try {
+      // setLoading(true);
+      const response = await axios.get(`${API_ENDPOINTS.CLEARANCE_BASE}/all`, {
+
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+      });
+      if (response.data.success) {
+        setClearanceRequests(response.data.data.length);
+        console.log(response.data.data.filter((item)=>item.studentId === '5d99f019-33ed-46df-93b8-952bdd37387b'));
+        setPendingRequests(response.data.data.filter((item)=>item.status === 'PENDING').length);
+        setApprovedRequests(response.data.data.filter((item)=>item.status === 'APPROVED').length);
+        setRejectedRequests(response.data.data.filter((item)=>item.status === 'REJECTED').length);
+      } else {
+        message.error('Failed to fetch clearance requests');
+      }
+    } catch (error) {
+      message.error('Failed to fetch clearance requests');
+    } finally {
+      // setLoading(false);
+    }
+  };
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(`${API_ENDPOINTS.GET_ALL_DEPARTMENTS}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        } 
+      });
+      if (response.data.success) {
+        setDepartments(response.data.data);
+        // Generate approval stats based on actual departments
+        const colors = ['#52c41a', '#13c2c2', '#1890ff', '#722ed1', '#eb2f96', '#fa8c16', '#f5222d', '#faad14', '#a0d911', '#52c41a', '#13c2c2', '#1890ff'];
+        const newApprovalStats = response.data.data.map((dept, index) => ({
+          department: dept.name,
+          approvals: Math.floor(Math.random() * 100) + 20, // Random number between 20-120 for demo
+          color: colors[index % colors.length]
+        }));
+        setApprovalStats(newApprovalStats);
+      } else {
+        message.error('Failed to fetch departments');
+      }
+    } catch (error) {
+      message.error('Failed to fetch departments');
+    }
+  };  
+  const fetchStudents = async () => {
+    // setLoading(true);
+    try {
+      const response = await getStudents();
+      if (response.success) {
+        // Transform data to match table structure
+        const formattedStudents = response.data.data.map(student => ({
+          key: student.id,
+          name: student.name,
+          email: student.user.email,
+          matricNo: student.matricNo,
+          phoneNumber: student.phoneNumber,
+          departmentId: student.departmentId,
+          departmentName: student.departmentName || 'Not assigned'
+        }));
+        setStudents(formattedStudents);
+        setTotalStudents(response.data.data.length);
+      } else {
+        message.error('Failed to fetch students');
+      }
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      message.error('Failed to fetch students');
+    } finally {
+      // setLoading(false);
+    }
+  };
+  
   // Department approval data for charts
-  const [approvalStats] = useState([
-    { department: 'Computer Science', approvals: 120, color: '#52c41a' },
-    { department: 'Electrical', approvals: 90, color: '#13c2c2' },
-    { department: 'Mechanical', approvals: 70, color: '#1890ff' },
-    { department: 'Civil', approvals: 50, color: '#722ed1' },
-    { department: 'Medicine', approvals: 60, color: '#eb2f96' },
-    { department: 'Business', approvals: 35, color: '#fa8c16' }
-  ]);
+  const [approvalStats, setApprovalStats] = useState([]);
 
   // Request status data for pie chart
   const requestStatusData = [
-    { name: 'Approved', value: stats.approvedRequests, color: '#52c41a' },
-    { name: 'Pending', value: stats.pendingRequests, color: '#faad14' },
-    { name: 'Rejected', value: stats.rejectedRequests, color: '#ff4d4f' },
+    { name: 'Approved', value: approvedRequests, color: '#52c41a' },
+    { name: 'Pending', value: pendingRequests, color: '#faad14' },
+    { name: 'Rejected', value: rejectedRequests, color: '#ff4d4f' },
   ];
 
   // Recent activity logs
@@ -138,10 +224,10 @@ const SuperAdminDashboard = () => {
   return (
     <Layout style={{ minHeight: '100vh', background: '#f0f5f0' }}>
       {/* <SuperAdminSideNav /> */}
-      <Layout style={{  }}>
-        <div style={{ background: '#1e6641',marginRight:'2%', marginLeft:'2%',padding: '16px 24px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', borderRadius: '8px' }}>
+      <Layout style={{}}>
+        <div style={{ background: '#1e6641', marginRight: '2%', marginLeft: '2%', padding: '16px 24px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', borderRadius: '8px' }}>
           <Title level={3} style={{ margin: 0, color: '#fff' }}>Super Admin Dashboard</Title>
-        
+
         </div>
 
         <Content style={{ padding: '24px', overflow: 'auto' }}>
@@ -150,7 +236,7 @@ const SuperAdminDashboard = () => {
               <Card hoverable style={{ borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)' }}>
                 <Statistic
                   title={<Text strong style={{ color: '#1e6641' }}>Total Clearance Requests</Text>}
-                  value={stats.totalClearanceRequests}
+                  value={clearanceRequests}
                   prefix={<FileTextOutlined style={{ color: '#52c41a' }} />}
                   valueStyle={{ color: '#1e6641' }}
                 />
@@ -163,7 +249,7 @@ const SuperAdminDashboard = () => {
               <Card hoverable style={{ borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)' }}>
                 <Statistic
                   title={<Text strong style={{ color: '#1e6641' }}>Total Departments</Text>}
-                  value={stats.totalDepartments}
+                  value={departments.length}
                   prefix={<AppstoreOutlined style={{ color: '#52c41a' }} />}
                   valueStyle={{ color: '#1e6641' }}
                 />
@@ -175,8 +261,8 @@ const SuperAdminDashboard = () => {
             <Col xs={24} md={8}>
               <Card hoverable style={{ borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)' }}>
                 <Statistic
-                  title={<Text strong style={{ color: '#1e6641' }}>Total Users</Text>}
-                  value={stats.totalUsers}
+                  title={<Text strong style={{ color: '#1e6641' }}>Total Students</Text>}
+                  value={totalStudents}
                   prefix={<TeamOutlined style={{ color: '#52c41a' }} />}
                   valueStyle={{ color: '#1e6641' }}
                 />
@@ -216,25 +302,28 @@ const SuperAdminDashboard = () => {
                 </ResponsiveContainer>
 
                 <Row gutter={16} style={{ marginTop: 8 }}>
-                  <Col span={8}>
+                  <Col span={8} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <Statistic
-                      value={stats.approvedRequests}
+                      value={approvedRequests}
+                      style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px'}}
                       title={<Text style={{ color: '#52c41a' }}><CheckCircleOutlined /> Approved</Text>}
-                      valueStyle={{ color: '#52c41a', fontSize: '18px' }}
+                      valueStyle={{ color: '#52c41a', fontSize: '15px' }}
                     />
                   </Col>
                   <Col span={8}>
                     <Statistic
-                      value={stats.pendingRequests}
+                      value={pendingRequests}
+                      style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px'}}
                       title={<Text style={{ color: '#faad14' }}><ClockCircleOutlined /> Pending</Text>}
-                      valueStyle={{ color: '#faad14', fontSize: '18px' }}
+                      valueStyle={{ color: '#faad14', fontSize: '15px' }}
                     />
                   </Col>
                   <Col span={8}>
                     <Statistic
-                      value={stats.rejectedRequests}
+                      value={rejectedRequests}
+                      style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px'}}
                       title={<Text style={{ color: '#ff4d4f' }}><ClockCircleOutlined /> Rejected</Text>}
-                      valueStyle={{ color: '#ff4d4f', fontSize: '18px' }}
+                      valueStyle={{ color: '#ff4d4f', fontSize: '15px' }}
                     />
                   </Col>
                 </Row>
@@ -250,10 +339,15 @@ const SuperAdminDashboard = () => {
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart
                     data={approvalStats}
-                    margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
+                    margin={{ top: 5, right: 0, left: 0, bottom: 10 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="department" tick={{ fontSize: 12 }} />
+                    <XAxis 
+                      dataKey="department" 
+                      tick={{ fontSize: 12, angle: -45, textAnchor: 'end' }}
+                      interval={0}
+                      height={60}
+                    />
                     <YAxis tick={{ fontSize: 12 }} />
                     <Tooltip formatter={(value, name, props) => [`${value} Approvals`, props.payload.department]} />
                     <Legend />

@@ -10,7 +10,8 @@ import {
   IdcardOutlined,
   BookOutlined,
   SettingOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  CheckCircleFilled
 } from '@ant-design/icons';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../../../assets/logo.png';
@@ -89,6 +90,11 @@ const SuperAdminLayout = () => {
       key: '/dashboard/super-admin/clearance-requests',
       icon: <BankOutlined />,
       label: 'Clearance Requests',
+    },
+    {
+      key: '/dashboard/super-admin/approvals',
+      icon: <CheckCircleFilled />,
+      label: 'Approvals',
     },
     {
       key: 'users',
@@ -197,6 +203,7 @@ const SuperAdminLayout = () => {
             selectedKeys={[
               currentPath === '/dashboard/super-admin' ? '/dashboard/super-admin' : 
               currentPath.includes('/departments') ? '/dashboard/super-admin/departments' :
+              currentPath.includes('/approvals') ? '/dashboard/super-admin/approvals' :
               currentPath.includes('/clearance-requests') ? '/dashboard/super-admin/clearance-requests' :
               isStudentsActive ? '/dashboard/super-admin/users/students' :
               isAdminsActive ? '/dashboard/super-admin/users/admins' :
