@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   DesktopOutlined,
   FileOutlined,
@@ -7,12 +7,13 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu,Dropdown, Avatar, theme, ConfigProvider } from 'antd';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import AdminDashboard from '../dashboards/adminDashboard/AdminDashboard';
 import StudentLayout from '../dashboards/studentDashboard/StudentLayout';
 import SuperAdminLayout from '../dashboards/superAdminDashboard/SuperAdminLayout';
 import StudentDashboard from '../dashboards/studentDashboard/pages/DashboardPanel';
-
+import { useAuth } from '../Api/AuthContext';
+import SuperAdminDashboard from '../dashboards/superAdminDashboard/SuperAdminDashboard';
 
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, children) {
@@ -35,47 +36,34 @@ const items = [
   getItem('Profile', '9', <UserOutlined />),
 ];
 
-
-
-
 const MainLayout = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
-  const pathParts = location.pathname.split('/'); // splits the URL by '/'
+  
+  useEffect(() => {
+    // Redirect to the appropriate dashboard based on user role
+    if (user) {
+      const currentPath = location.pathname;
+      
+      if (currentPath === '/dashboard') {
+        if (user.role === 'SUPER_ADMIN') {
+          navigate('/dashboard/super-admin');
+        } else if (user.role === 'admin') {
+          navigate('/dashboard/admin');
+        } else if (user.role === 'STUDENT') {
+          navigate('/dashboard/student');
+        }
+      }
+    }
+  }, [user, navigate, location.pathname]);
 
-  const role = pathParts[2]; // because index 0 is '', 1 is 'dashboard', 2 is the role
+  if (!user) {
+    return <Navigate to="/sign-in" />;
+  }
 
-  const profileMenu = (
-    <Menu
-      items={[
-        {
-          key: '1',
-          label: 'Profile',
-        },
-        {
-          key: '2',
-          label: 'Settings',
-        },
-        {
-          key: '3',
-          label: 'Logout',
-        },
-      ]}
-    />
-  );
-
-
-
-  return (
-   <>
-{/* {role === 'admin' && <AdminDashboard/>}
-      {role === 'student' && <StudentDashboard/>}
-      {role === 'super-admin' && <SuperAdminLayout/>} */}
-      <Outlet/>
-   </>
-  );
+  // Just render the child routes
+  return <Outlet />;
 };
+
 export default MainLayout;

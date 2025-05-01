@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Form, Input, Button, Checkbox, Row, Col, Typography, Card, Spin, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuth } from '../Api/AuthContext';
@@ -10,11 +10,18 @@ const Sign_in = () => {
   const { requestLogin, verifyOtp } = useAuth();
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const [email, setEmail] = useState(''); // State for email input
 
   // States for OTP flow
   const [otpSent, setOtpSent] = useState(false);
-  const [otpValue, setOtpValue] = useState('');
+  const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']); // 6-digit OTP
   const [tempToken, setTempToken] = useState(null);
+  const otpRefs = useRef([]);
+
+  useEffect(() => {
+    // Initialize refs when component mounts
+    otpRefs.current = otpRefs.current.slice(0, 6);
+  }, []);
 
   const onFinish = async (values) => {
     try {
@@ -26,6 +33,7 @@ const Sign_in = () => {
       const loginData = isMatric
         ? { matric_number: email, password }
         : { email, password };
+      setEmail(email); // Store email for OTP verification
 
       const response = await requestLogin(loginData);
 
@@ -43,16 +51,39 @@ const Sign_in = () => {
     }
   };
 
+  const handleOtpChange = (index, value) => {
+    // Allow only single digit
+    const digit = value.replace(/[^0-9]/g, '').slice(0, 1);
+    
+    const newOtpValues = [...otpValues];
+    newOtpValues[index] = digit;
+    setOtpValues(newOtpValues);
+    
+    // Auto-focus to next input if current input is filled
+    if (digit && index < 5) {
+      otpRefs.current[index + 1].focus();
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    // Move to previous input on backspace if current input is empty
+    if (e.key === 'Backspace' && !otpValues[index] && index > 0) {
+      otpRefs.current[index - 1].focus();
+    }
+  };
+
   const onOtpSubmit = async () => {
-    if (!otpValue) {
-      message.error('Please enter the OTP');
+    const otpValue = otpValues.join('');
+    if (otpValue.length !== 6) {
+      message.error('Please enter the complete 6-digit OTP');
       return;
     }
     try {
       setLoading(true);
-      const response = await verifyOtp(tempToken, otpValue);
+      const response = await verifyOtp(email, otpValue);
       if (response.success) {
         message.success('OTP verified. Redirecting to dashboard...');
+        
       } else {
         message.error(response.message || 'OTP verification failed');
       }
@@ -150,21 +181,43 @@ const Sign_in = () => {
               ) : (
                 <>
                   <Title level={2} className="login-title">Enter OTP</Title>
-                  <Paragraph>Please enter the OTP sent to your email to complete login.</Paragraph>
-                  <Input
-                    size="large"
-                    placeholder="Enter OTP"
-                    value={otpValue}
-                    onChange={(e) => setOtpValue(e.target.value)}
-                    disabled={loading}
-                    style={{ marginBottom: 16 }}
-                  />
+                  <Paragraph>Please enter the 6-digit OTP sent to your email to complete login.</Paragraph>
+                  
+                  <div style={{ margin: '20px 0' }}>
+                    <Row gutter={12} justify="center">
+                      {[0, 1, 2, 3, 4, 5].map((index) => (
+                        <Col key={index}>
+                          <Input
+                            ref={el => otpRefs.current[index] = el}
+                            className="otp-input"
+                            value={otpValues[index]}
+                            onChange={(e) => handleOtpChange(index, e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(index, e)}
+                            maxLength={1}
+                            autoFocus={index === 0}
+                            disabled={loading}
+                            style={{
+                              width: '50px',
+                              height: '50px',
+                              fontSize: '24px',
+                              textAlign: 'center',
+                              margin: '0 4px',
+                              borderRadius: '8px',
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                            }}
+                          />
+                        </Col>
+                      ))}
+                    </Row>
+                  </div>
+                  
                   <Button
                     type="primary"
                     size="large"
                     block
                     onClick={onOtpSubmit}
                     loading={loading}
+                    style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
                   >
                     Verify OTP
                   </Button>
