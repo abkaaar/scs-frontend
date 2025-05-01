@@ -17,7 +17,19 @@ const Sign_in = () => {
   const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']); // 6-digit OTP
   const [tempToken, setTempToken] = useState(null);
   const otpRefs = useRef([]);
-
+  const [messageApi, contextHolder] = message.useMessage();
+  const error = (message) => {
+    messageApi.open({
+      type: 'error',
+      content:message,
+    });
+  };
+  const success = (message) => {
+    messageApi.open({
+      type: 'success',
+      content: message,
+    });
+  };
   useEffect(() => {
     // Initialize refs when component mounts
     otpRefs.current = otpRefs.current.slice(0, 6);
@@ -40,12 +52,12 @@ const Sign_in = () => {
       if (response.success) {
         setTempToken(response.token);
         setOtpSent(true);
-        message.success('Login successful. Please enter the OTP sent to your email.');
+        success('Login successful. Please enter the OTP sent to your email.');
       } else {
-        message.error(response.message || 'Login failed', 5);
+        error(response.message || 'Login failed', 5);
       }
     } catch (error) {
-      message.error('Login error occurred', 5);
+      error('Login error occurred', 5);
     } finally {
       setLoading(false);
     }
@@ -75,20 +87,20 @@ const Sign_in = () => {
   const onOtpSubmit = async () => {
     const otpValue = otpValues.join('');
     if (otpValue.length !== 6) {
-      message.error('Please enter the complete 6-digit OTP');
+      error('Please enter the complete 6-digit OTP');
       return;
     }
     try {
       setLoading(true);
       const response = await verifyOtp(email, otpValue);
       if (response.success) {
-        message.success('OTP verified. Redirecting to dashboard...');
+        success('OTP verified. Redirecting to dashboard...');
         
       } else {
-        message.error(response.message || 'OTP verification failed');
+        error(response.message || 'OTP verification failed');
       }
     } catch (error) {
-      message.error('OTP verification error occurred');
+      error('OTP verification error occurred');
     } finally {
       setLoading(false);
     }
@@ -96,6 +108,8 @@ const Sign_in = () => {
 
   return (
     <div className="login-container">
+      {contextHolder}
+
       <Card className="login-card">
         <Row>
           {/* Left Side - Branding */}
